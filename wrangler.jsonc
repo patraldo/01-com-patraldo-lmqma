@@ -16,7 +16,17 @@
 	},
 	"observability": {
 		"enabled": true
-	}
+	},
+	"vars": {
+                "MAILGUN_DOMAIN": "patraldo.com"
+	},
+        "d1_databases": [
+                {
+                        "binding": "LAMUSA-DB",
+                        "database_name": "lamusa-db",
+                        "database_id": "d4a6ff68-23e8-49d3-8172-8a608feef1c1"
+                }
+        ],
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
