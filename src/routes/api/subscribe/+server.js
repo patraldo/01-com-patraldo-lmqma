@@ -144,7 +144,7 @@ async function sendEmail(to, subject, htmlContent, env) {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
-          from: `La Musa que Más Aplauda <lamusa@patraldo.com>`,
+          from: `lamusa@patraldo.com`,
           to: to,
           subject: subject,
           html: htmlContent
