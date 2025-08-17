@@ -12,7 +12,7 @@ export const POST = async ({ request, platform }) => {
   }
 
   const db = platform.env.DB;
-  const token = uuidv4(); // Unique confirmation token
+  const token = uuidv4();
 
   try {
     // Check if email already exists
@@ -34,8 +34,6 @@ export const POST = async ({ request, platform }) => {
            SET token = ? 
            WHERE email = ?`
         ).bind(token, email).run();
-        
-        // Continue to send confirmation email
       }
     }
 
@@ -47,11 +45,14 @@ export const POST = async ({ request, platform }) => {
       ).bind(email, token).run();
     }
 
-    // Send confirmation email
-    const confirmationLink = `https://lamusamasaaplauda.com/api/confirm?token=${token}`;
+    // CRITICAL FIX: Use the correct Mailgun domain and from address
+    const MAILGUN_DOMAIN = platform.env.MAILGUN_DOMAIN;
+    const FROM_EMAIL = platform.env.FROM_EMAIL;
+    
+    const confirmationLink = `https://lamusa.patraldo.com/api/confirm?token=${token}`;
     
     const formData = new URLSearchParams();
-    formData.append('from', `La Musa que Más Aplauda <events@lamusamasaaplauda.com>`);
+    formData.append('from', `La Musa que Más Aplauda <${FROM_EMAIL}>`);
     formData.append('to', email);
     formData.append('subject', 'Confirma tu suscripción a Tray Chic');
     formData.append('html', `
@@ -63,8 +64,9 @@ export const POST = async ({ request, platform }) => {
       <p>Si no solicitaste esto, ignora este mensaje.</p>
     `);
 
+    // Use the root domain (patraldo.com) in the API URL
     const mailRes = await fetch(
-      `https://api.mailgun.net/v3/${platform.env.MAILGUN_DOMAIN}/messages`,
+      `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`,
       {
         method: 'POST',
         headers: {
@@ -75,7 +77,9 @@ export const POST = async ({ request, platform }) => {
     );
 
     if (!mailRes.ok) {
-      throw new Error('Failed to send confirmation email');
+      const errorData = await mailRes.text();
+      console.error('Mailgun error:', errorData);
+      throw new Error(`Mailgun API error: ${mailRes.status} ${errorData}`);
     }
 
     return json({ 
@@ -84,6 +88,7 @@ export const POST = async ({ request, platform }) => {
     });
 
   } catch (err) {
+    console.error('Subscription error:', err);
     return json({ 
       error: 'Failed to process subscription', 
       message: 'Hubo un problema al procesar tu suscripción. Intenta más tarde.'
