@@ -45,14 +45,12 @@ export const POST = async ({ request, platform }) => {
       ).bind(email, token).run();
     }
 
-    // CRITICAL FIX: Use the correct Mailgun domain and from address
-    const MAILGUN_DOMAIN = platform.env.MAILGUN_DOMAIN;
-    const FROM_EMAIL = platform.env.FROM_EMAIL;
-    
+    // CRITICAL: Confirmation link points to SUBDOMAIN
     const confirmationLink = `https://lamusa.patraldo.com/api/confirm?token=${token}`;
     
     const formData = new URLSearchParams();
-    formData.append('from', `La Musa que Más Aplauda <${FROM_EMAIL}>`);
+    // FROM_EMAIL uses root domain (lamusa@patraldo.com)
+    formData.append('from', `La Musa que Más Aplauda <${platform.env.FROM_EMAIL}>`);
     formData.append('to', email);
     formData.append('subject', 'Confirma tu suscripción a Tray Chic');
     formData.append('html', `
@@ -64,9 +62,9 @@ export const POST = async ({ request, platform }) => {
       <p>Si no solicitaste esto, ignora este mensaje.</p>
     `);
 
-    // Use the root domain (patraldo.com) in the API URL
+    // Mailgun API uses ROOT DOMAIN (patraldo.com)
     const mailRes = await fetch(
-      `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`,
+      `https://api.mailgun.net/v3/${platform.env.MAILGUN_DOMAIN}/messages`,
       {
         method: 'POST',
         headers: {

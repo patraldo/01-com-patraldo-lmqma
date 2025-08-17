@@ -1,5 +1,3 @@
-import { json } from '@sveltejs/kit';
-
 export const GET = async ({ url, platform }) => {
   const token = url.searchParams.get('token');
   
@@ -13,7 +11,6 @@ export const GET = async ({ url, platform }) => {
   const db = platform.env.DB;
   
   try {
-    // Verify token and get email
     const subscriber = await db.prepare(
       'SELECT email FROM subscribers WHERE token = ? AND status = "pending"'
     ).bind(token).first();
@@ -25,23 +22,20 @@ export const GET = async ({ url, platform }) => {
       );
     }
 
-    // Confirm subscription
     await db.prepare(
       `UPDATE subscribers 
        SET status = 'confirmed', confirmed_at = datetime('now') 
        WHERE token = ?`
     ).bind(token).run();
 
-    // Optional: Send welcome email
-    // ...
-
-    // Return HTML response for browser
+    // CRITICAL: Redirect to SUBDOMAIN after confirmation
     return new Response(`
       <!DOCTYPE html>
       <html>
         <head>
           <meta charset="utf-8">
           <title>Suscripción Confirmada</title>
+          <meta http-equiv="refresh" content="5;url=https://lamusa.patraldo.com">
           <style>
             body { font-family: system-ui, sans-serif; max-width: 600px; margin: 40px auto; text-align: center; }
             h1 { color: #4caf50; }
@@ -53,7 +47,7 @@ export const GET = async ({ url, platform }) => {
           <h1>¡Confirmado!</h1>
           <p>Gracias por confirmar tu suscripción a <strong>Tray Chic</strong>.</p>
           <p>Recibirás noticias cuando la exhibición esté lista.</p>
-          <p><a href="/">Volver al sitio</a></p>
+          <p><a href="https://lamusa.patraldo.com">Volver al sitio</a></p>
         </body>
       </html>
     `, {

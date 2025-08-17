@@ -19,7 +19,7 @@
 	},
 	"vars": {
                 "MAILGUN_DOMAIN": "patraldo.com",
-		"FROM_EMAIL": "events@lamusa.patraldo.com"  // This is your subdomain email
+		"FROM_EMAIL": "lamusa@patraldo.com"  
 	},
         "d1_databases": [
                 {
