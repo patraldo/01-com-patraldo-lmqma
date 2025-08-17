@@ -50,7 +50,7 @@ export const POST = async ({ request, platform }) => {
     
     const formData = new URLSearchParams();
     // FROM_EMAIL uses root domain (lamusa@patraldo.com)
-    formData.append('from', `La Musa que Más Aplauda <${platform.env.FROM_EMAIL}>`);
+    formData.append('from', `La Musa que Más Aplauda <events@patraldo.com>`);
     formData.append('to', email);
     formData.append('subject', 'Confirma tu suscripción a Tray Chic');
     formData.append('html', `

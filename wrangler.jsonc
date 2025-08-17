@@ -18,8 +18,7 @@
 		"enabled": true
 	},
 	"vars": {
-                "MAILGUN_DOMAIN": "patraldo.com",
-		"FROM_EMAIL": "lamusa@patraldo.com"  
+                "MAILGUN_DOMAIN": "patraldo.com"
 	},
         "d1_databases": [
                 {
